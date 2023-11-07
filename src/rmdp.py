@@ -42,6 +42,10 @@ class MDP(object):
 
         # Stacked (I - gamma P_a)
         self.IGammaPAStacked = self.construct_design_matrix()
+        # QRM matrix
+        self.QRM = np.zeros((self.num_states, self.num_actions))
+        # c for QRM_step
+        self.c = 1
         # occupancy frequency of an expert's policy u[S x A]
         (u_E, opt_return) = self.solve_putterman_dual_LP_for_Opt_policy()
         self.u_E = u_E  # occupancy frequency of the expert's policy
@@ -231,6 +235,21 @@ class MDP(object):
         # assert np.sum(u_flat) - 1 / (1 - gamma) < 10**-2
         # Return the occ_freq and the opt return
         return u_flat.reshape((s, a), order="F"), dual_return
+
+    def QRM_step(self, beta: float, D: List[Tuple]):
+        """Performs a single step of the QRM algorithm
+        Args:
+            D: A list of (s,a) pairs
+        Returns:
+            A tuple of the new occupancy frequency and the new return
+        """
+        learning_rate = 1
+        for t, (s, a) in enumerate(D):
+            r = self.reward_matrix[s, a]
+            learning_rate = self.c / (self.c + t)
+            QRM_beta_gamma = 8655309 # what is this?
+            self.QRM[s,a] = (1-learning_rate) * self.QRM[s,a] + learning_rate * (np.exp(-beta * r) * QRM_beta_gamma)
+
 
     def observed(self, state, D: Set[Tuple]) -> Tuple[bool, int]:
         for s, a in D:

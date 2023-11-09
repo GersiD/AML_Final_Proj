@@ -58,7 +58,31 @@ class MDP(object):
         self.mu_E = None
         self.weights = np.zeros(num_features)
 
+        self.current_state = 0
+
         # self.worst_return = self.solve_worst()[1]
+
+    # Methods to make this class work like open-ai gym 
+    def reset(self) -> int:
+        """
+        Reset the MDP to an initial state using p_0
+        Returns:
+            int: The initial state
+        """
+        self.current_state = np.random.choice(self.states, p=self.p_0)
+        return self.current_state
+
+    def step(self, action) -> Tuple[int, float]:
+        """
+        Take a step in the MDP
+        Args:
+            action: The action to take
+        Returns:
+            int: The next state s'
+            float: The reward r(s,a)
+        """
+        self.current_state = self.next_state(self.current_state, action)
+        return self.current_state, self.reward_matrix[self.current_state, action]
     
     def argmax_next_state(self, state: int, action: int) -> int:
         """Given state and action pair, return the most likely next state based on the MDP dynamics"""

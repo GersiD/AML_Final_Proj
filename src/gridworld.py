@@ -135,27 +135,13 @@ class GridWorld(MDP):
 
 def main():
     np.random.seed(603)
-    env = GridWorld(3, 0.99)
-    episodes = 1
-    horizon = 100
-    D = env.generate_demonstrations_from_occ_freq(env.u_E, episodes, horizon)
-    # D = env.generate_off_policy_demonstrations(episodes, horizon, env.u_E, env.u_rand)
-    # D = [env.generate_all_expert_demonstrations()]
-    # print(env.reward)
-    bc_return = env.solve_BC(D, episodes, horizon)
-    print(f"\033[34mBC Return    = { bc_return }\033[0m")
-    gail_ret = env.solve_GAIL(D, episodes, horizon)
-    print(f"GAIL Return    = { gail_ret }")
-    print(f"\033[32mOptimal Return = { env.opt_return }\033[0m")
-    (_, radius, cheb_return) = env.solve_chebyshev_center(D)
-    print(f"\033[34mCheb Return    = { cheb_return }\033[0m")
-    print(f"\033[34mCheb Radius    = { radius }\033[0m")
-    (_, radius, syed_return) = env.solve_syed(D, episodes, horizon)
-    print(f"Syed Return    = { syed_return }")
-    print(f"Syed Radius    = { radius }")
-    print(f"Random return  = { env.random_return }")
+    env = GridWorld(10, 0.99)
+    print(f"Example trajectory: s0 = {env.reset()}")
+    print(env.step(0))
+    print(env.step(0))
+    print(env.step(0))
 
-    # print(env.occupancy_freq_to_policy(cheb_sol[0])) # print the policy learned
+
 
 
 if __name__ == "__main__":
